@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400&family=Kaushan+Script&family=Poppins:wght@100;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="screen" id="form">
+        <div class="container">
+            <a class="back" href="event-details.html" aria-label="Back">
+                <svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg>
+            </a>
+            <h2 class="page-title">Personal Information</h2>
+            <p class="page-subtitle">Fill in Your Detail To Get Your Verification Code</p>
+
+            <form class="card" id="detailsForm">
+                <div class="field">
+                    <label for="fullName">Full name</label>
+                    <input type="text" id="fullName" placeholder="e.g  Joe Anderson" required>
+                </div>
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="e.g  Joeandy234@gmail.com" required>
+                </div>
+                <div class="field">
+                    <label for="phone">Phone number</label>
+                    <input type="tel" id="phone" placeholder="e.g  +234" required>
+                </div>
+                <div class="field">
+                    <label id="typeLabel">Event Type</label>
+                    <div class="select" id="select">
+                        <button type="button" class="select-button" id="selectButton" aria-labelledby="typeLabel">
+                            <span id="selectValue">e.g VIP, Regular</span>
+                            <svg width="14" height="9" viewBox="0 0 14 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1.5 6 6 6-6"/></svg>
+                        </button>
+                        <ul class="options" id="options">
+                            <li>Regular</li>
+                            <li>VIP</li>
+                            <li>VVIP</li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="btn" type="submit">Get Code</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

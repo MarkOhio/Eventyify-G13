@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#fff4d6">
+<title>Eventify</title>
+
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+<section class="screen splash active" id="splash">
+<div class="brand-lockup">
+<div class="logo-box">
+<svg viewBox="0 0 48 48" fill="none" stroke="#fff4d6" stroke-width="3.4" stroke-linecap="round">
+<path d="M7 18V12a5 5 0 0 1 5-5h6M30 7h6a5 5 0 0 1 5 5v6M7 30v6a5 5 0 0 0 5 5h6M30 41h6a5 5 0 0 0 5-5v-6"/>
+<path d="M16 24h16M24 16v16"/>
+<circle cx="24" cy="24" r="3.2" fill="#fff4d6" stroke="none"/>
+</svg>
+</div>
+<h1 class="brand">Eventify</h1>
+<p class="tagline">Smarter events. Better experiences.</p>
+<div class="loader"></div>
+</div>
+</section>
+
+<section class="screen" id="intro1">
+<button class="skip" data-skip>Skip</button>
+<div class="content">
+<div class="illustration">
+<svg viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">
+<rect width="360" height="190" fill="#f3dfb6"/>
+<circle cx="66" cy="48" r="27" fill="#e8c47e"/>
+<rect x="44" y="69" width="62" height="76" rx="9" fill="#d39a42"/>
+<circle cx="75" cy="59" r="13" fill="#f2d6a0"/>
+<path d="M57 90h38v42H57z" fill="#7b4a20"/>
+<path d="M66 100h20M66 108h20M66 116h14" stroke="#f4ddb2" stroke-width="3" stroke-linecap="round"/>
+<rect x="183" y="43" width="105" height="61" rx="8" fill="#fffaf0" stroke="#9d6a35" stroke-width="3"/>
+<rect x="192" y="53" width="87" height="42" rx="4" fill="#e9d6ad"/>
+<circle cx="214" cy="74" r="8" fill="#e4a13a"/>
+<path d="M230 66h42M230 75h34M230 84h24" stroke="#a97943" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M174 110l42 27-20 17-41-29z" fill="#6b4728"/>
+<path d="M178 114l39 25" stroke="#f4d99f" stroke-width="3"/>
+<circle cx="278" cy="132" r="22" fill="#e4a13a"/>
+<path d="M267 132l8 8 15-17" stroke="#fffaf0" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 162h360" stroke="#c78b38" stroke-width="5"/>
+</svg>
+</div>
+<div class="copy">
+<h2 class="title">Smarter Events.<br>Faster Check-ins.<br>Better Experiences.</h2>
+<p class="body">We make event check-in simple, secure, and stress-free. From generating unique QR tickets to verifying attendees and tracking attendance in real time, our platform helps organizers stay in control while giving attendees a smooth entry experience.</p>
+</div>
+<div class="progress"><i class="dot active"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+<button class="continue" data-next>Get Started</button>
+</div>
+</section>
+
+<section class="screen" id="intro2">
+<div class="content">
+<div class="illustration">
+<svg viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="club" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#26365e"/><stop offset="1" stop-color="#7c4b25"/></linearGradient></defs>
+<rect width="360" height="190" fill="url(#club)"/>
+<path d="M0 112L55 67l44 45 56-62 54 62 49-55 102 67v66H0z" fill="#3b2b25" opacity=".78"/>
+<g fill="#e4a13a" opacity=".8"><circle cx="25" cy="121" r="3"/><circle cx="44" cy="136" r="3"/><circle cx="73" cy="124" r="3"/><circle cx="100" cy="143" r="3"/><circle cx="132" cy="129" r="3"/><circle cx="166" cy="144" r="3"/><circle cx="205" cy="126" r="3"/><circle cx="239" cy="144" r="3"/><circle cx="273" cy="125" r="3"/><circle cx="305" cy="142" r="3"/><circle cx="337" cy="122" r="3"/></g>
+<g transform="translate(121 20) rotate(-3 56 67)">
+<rect width="112" height="137" rx="7" fill="#fffaf0"/>
+<rect x="15" y="17" width="82" height="65" rx="4" fill="#f0e2c3"/>
+<path d="M25 27h17v17H25zM51 27h17v17H51zM77 27h10v17H77zM25 53h17v17H25zM51 53h10v17H51zM68 53h19v17H68z" fill="#5f3d1e"/>
+<circle cx="56" cy="103" r="16" fill="#1f8a62"/>
+<path d="M48 103l6 6 11-13" stroke="#fffaf0" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="56" y="127" text-anchor="middle" font-size="8" font-family="Arial" fill="#6f431b">VALID TICKET</text>
+</g>
+<g transform="translate(204 32) rotate(18)">
+<rect width="72" height="89" rx="5" fill="#fffaf0"/>
+<rect x="10" y="12" width="52" height="42" fill="#eddcb7"/>
+<path d="M16 18h12v12H16zM34 18h12v12H34zM16 36h12v12H16zM34 36h20v12H34z" fill="#6f431b"/>
+</g>
+</svg>
+</div>
+<div class="copy">
+<h2 class="title">Verify Every Ticket<br>in Seconds</h2>
+<p class="body">Generate unique QR tickets and verify attendees quickly with a simple scan. Detect invalid, duplicate, and wrong-event tickets before they get through the door.</p>
+</div>
+<div class="progress"><i class="dot"></i><i class="dot active"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+<button class="continue" data-next>Continue</button>
+</div>
+</section>
+
+<section class="screen" id="intro3">
+<div class="content">
+<div class="illustration">
+<svg viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">
+<rect width="360" height="190" fill="#3b2a1d"/>
+<path d="M0 92L42 55l42 37 45-52 48 52 50-39 44 39 48-52 39 52v98H0z" fill="#52351f"/>
+<g stroke="#f3c45e" stroke-width="4" stroke-linecap="round"><path d="M35 0v44M82 0v50M126 0v35M171 0v53M215 0v37M259 0v52M304 0v39M344 0v51"/></g>
+<g stroke="#fff2c7" stroke-width="7" stroke-linecap="round" opacity=".9"><path d="M45 26l-22 66M86 28l-10 56M134 18l-23 75M175 26l16 65M222 18l22 75M267 30l-4 53M314 22l23 72"/></g>
+<g fill="#d6a14c"><circle cx="25" cy="130" r="6"/><circle cx="49" cy="142" r="7"/><circle cx="72" cy="130" r="5"/><circle cx="94" cy="145" r="7"/><circle cx="120" cy="131" r="5"/><circle cx="144" cy="144" r="7"/><circle cx="170" cy="132" r="6"/><circle cx="198" cy="145" r="7"/><circle cx="222" cy="131" r="5"/><circle cx="246" cy="144" r="7"/><circle cx="272" cy="131" r="6"/><circle cx="297" cy="145" r="7"/><circle cx="324" cy="131" r="6"/><circle cx="346" cy="145" r="5"/></g>
+<rect x="131" y="88" width="98" height="57" rx="8" fill="#fff4d6"/>
+<circle cx="153" cy="108" r="9" fill="#1f8a62"/>
+<path d="M148 108l4 4 7-8" stroke="#fff" stroke-width="2.5" fill="none"/>
+<path d="M171 103h43M171 112h32M171 121h25" stroke="#8c673d" stroke-width="3" stroke-linecap="round"/>
+</svg>
+</div>
+<div class="copy">
+<h2 class="title">Know Who's Checked<br>In, Live</h2>
+<p class="body">Monitor attendance as it happens. Keep track of check-ins, manage your event staff, and access accurate attendance records from one place.</p>
+</div>
+<div class="progress"><i class="dot"></i><i class="dot"></i><i class="dot active"></i><i class="dot"></i><i class="dot"></i></div>
+<button class="continue" data-next>Continue</button>
+</div>
+</section>
+
+<section class="screen" id="intro4">
+<div class="content check-content">
+<div class="copy">
+<h2 class="title">Keep Check-<br>in Moving</h2>
+<p class="body">Give your staff a simple scanning experience designed for fast entry, even when connectivity is unreliable.</p>
+</div>
+<div class="check-svg">
+<svg viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(45 18)" fill="none" stroke="#6f431b" stroke-linejoin="round">
+<path d="M0 10h54v54H0zM9 19h14v14H9zM31 19h14v14H31zM9 41h14v14H9zM31 41h7v7M42 48h3v7" stroke-width="5"/>
+</g>
+<g transform="translate(170 21)">
+<path d="M17 5l48 13v99l-48-13z" fill="#fffaf0" stroke="#6f431b" stroke-width="3"/>
+<path d="M17 5L5 19v98l12-13z" fill="#ecd9ae" stroke="#6f431b" stroke-width="3"/>
+<path d="M31 29l23 6M31 41l23 6M31 53l17 5" stroke="#c39452" stroke-width="4" stroke-linecap="round"/>
+<path d="M45 79c11-11 25-5 28 6 3 13-7 27-20 29-14 1-25-10-23-23 1-7 6-12 15-12z" fill="#e6a23c" stroke="#6f431b" stroke-width="3"/>
+<path d="M41 90l8 8 14-18" stroke="#fffaf0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path d="M105 45c18 2 31 8 43 21" stroke="#b5651d" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M108 38l-6 10 12 1" fill="#b5651d"/>
+<g fill="#e6a23c"><circle cx="91" cy="137" r="5"/><circle cx="110" cy="151" r="4"/><circle cx="137" cy="142" r="5"/></g>
+</svg>
+</div>
+<div class="progress"><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot active"></i><i class="dot"></i></div>
+<button class="continue" data-next>Continue</button>
+</div>
+</section>
+
+<section class="screen role-screen" id="roles">
+<div class="role-wrap">
+<h2 class="role-title">How are you using<br>the platform?</h2>
+<p class="role-sub">Choose an option below to continue</p>
+
+<a href="admin/login.html">
+<button class="role-card" data-role="organizer">
+<span class="role-icon">
+<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="5" y="6" width="22" height="21" rx="3"/><path d="M10 4v5M22 4v5M5 12h22M10 18l3 3 8-8"/>
+</svg>
+</span>
+<span><span class="role-name">I'm Organizing an Event</span><br><span class="role-desc">Create and manage my event.</span></span>
+</button>
+
+</a>
+<a href="staff/login.html">
+<button class="role-card" data-role="staff">
+<span class="role-icon">
+<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M7 5h18v22H7z"/><path d="M11 10h10M11 15h10M11 20h6"/><path d="M22 21l3 3 5-6"/>
+</svg>
+</span>
+<span><span class="role-name">I'm an Event Staff</span><br><span class="role-desc">Scan tickets and manage entry.</span></span>
+</button>
+</a>
+<button class="login" id="loginButton">Already have an account? <b>Log in</b></button>
+<button class="continue role-next" id="roleContinue">Continue</button>
+</div>
+</section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
