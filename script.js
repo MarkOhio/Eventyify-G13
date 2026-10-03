@@ -3,18 +3,24 @@
 var screens=document.querySelectorAll(".screen");
 var order=["splash","intro1","intro2","intro3","intro4","roles"];
 var current=0;
+var backButton=document.getElementById("backButton");
 
 function show(index){
 screens.forEach(function(screen,i){
 screen.classList.toggle("active",i===index);
 });
 current=index;
+backButton.classList.toggle("visible",index>=2);
 window.scrollTo(0,0);
 }
 
 function next(){
 if(current<order.length-1)show(current+1);
 }
+
+backButton.addEventListener("click",function(){
+show(1);
+});
 
 document.querySelectorAll("[data-next]").forEach(function(button){
 button.addEventListener("click",next);

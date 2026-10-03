@@ -158,6 +158,30 @@ color:#a88d6b;
 font-size:10px;
 cursor:pointer;
 }
+.back-button{
+position:absolute;
+top:22px;
+left:24px;
+z-index:10;
+border:0;
+background:none;
+color:#a88d6b;
+font-size:32px;
+font-weight:400;
+line-height:1;
+padding:4px;
+cursor:pointer;
+opacity:0;
+visibility:hidden;
+pointer-events:none;
+transition:opacity .2s ease,visibility 0s linear .2s;
+}
+.back-button.visible{
+opacity:1;
+visibility:visible;
+pointer-events:auto;
+transition:opacity .2s ease;
+}
 .check-content{
 margin:auto;
 }
