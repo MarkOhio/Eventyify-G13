@@ -1,7 +1,7 @@
 :root {
     --cream: #fff4d6;
-    --gold: #e6a23c;
-    --brown: #bc5f19;
+    --gold: #E6A23C;
+    --brown: rgba(107, 58, 15, 0.88);
     --cream2: #f6d28b;
     --muted: #a18b70;
     --error-color: #ef4545;
@@ -49,13 +49,13 @@ button, input, select, textarea {
     width: 29px;
     height: 29px;
     border-radius: 10px;
-    background: linear-gradient(180deg, #e6a23c, #b5651d);
+    
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.logo-box svg {
+.logo-box img {
     width: 70%;
     height: 70%;
 }
