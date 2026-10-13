@@ -57,6 +57,6 @@ roleContinue.addEventListener("click", function () {
     if (chosenRole == "organizer") {
         window.location.href = "./organizer/signup.html";
     } else {
-        window.location.href = "../staff/signup.html";
+        window.location.href = "./staff/signup.html";
     }
 });
