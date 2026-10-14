@@ -3,8 +3,8 @@ if (userName == null) {
     userName = backend.organizer.firstName;
 }
 
-document.getElementById("mGreeting").innerHTML = "Good Morning, " + userName + " &#128075;";
-document.getElementById("dGreeting").innerHTML = "Good Morning, " + userName + " &#128075;";
+document.getElementById("mGreeting").innerHTML = "Good Day, " + userName + " &#128075;";
+document.getElementById("dGreeting").innerHTML = "Good Day, " + userName + " &#128075;";
 
 var totalEvents = backend.events.length;
 var pending = backend.totalAttendance - backend.checkedInTotal;

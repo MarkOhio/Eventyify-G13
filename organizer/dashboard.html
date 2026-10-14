@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Eventify Organizer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+   
     <link rel="stylesheet" href="style.css">
 </head>
 <body data-page="dashboard" data-protected="yes">
@@ -18,6 +19,11 @@
                 <div class="stat-box"><p class="label-sm">Total Event</p><p class="value" id="mTotalEvents">0</p></div>
                 <div class="stat-box"><p class="label-sm">Total Attendance</p><p class="value" id="mTotalAttendance">0</p></div>
             </div>
+             <div class="quick-row">
+                            <a href="create-event.html">+ Create Event</a>
+                            <a href="ticket-codes.html">Upload Ticket Codes</a>
+                            <a href="reports.html">View Reports</a>
+                        </div>
             <h2 class="section-title">Upcoming Events</h2>
             <div id="mEvents"></div>
         </div>
@@ -43,13 +49,15 @@
                     <div class="desk-donut" id="dDonut"><span id="dRate">0%</span></div>
                     <p class="rate-count" id="dRateCount"></p>
                     <p class="rate-label">Checked in</p>
+
+                      <div class="quick-row">
+                            <a href="create-event.html">+ Create Event</a>
+                            <a href="ticket-codes.html">Upload Ticket Codes</a>
+                            <a href="reports.html">View Reports</a>
+                        </div>
                 </div>
             </div>
-            <div class="quick-row">
-                <a href="create-event.html">+ Create Event</a>
-                <a href="ticket-codes.html">Upload Ticket Codes</a>
-                <a href="reports.html">View Reports</a>
-            </div>
+          
         </div>
     </div>
 

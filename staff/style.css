@@ -58,9 +58,12 @@ button {
         display: none !important;
     }
 }
-
+@font-face {
+    font-family: 'Stinger Fit';
+    src: url('./assets/fonts/StingerFit.ttf');
+}
 .title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Stinger Fit', sans-serif;
     font-weight: 700;
     font-size: 26px;
     line-height: 1.15;
@@ -97,7 +100,7 @@ button {
 }
 
 .brand-name {
-    font-family: 'Kaushan Script', cursive;
+    font-family: 'Stinger Fit', sans-serif;
     font-weight: 400;
     font-size: 26px;
     color: var(--primary);
@@ -333,10 +336,13 @@ textarea.input {
 .collage-wrap .logo-mark {
     margin: 0 auto 14px;
     background: none;
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
 }
-
+.collage-wrap .logo-mark img{
+        width: 54px;
+    height: 54px;
+}
 .social-row {
     display: flex;
     gap: 14px;
@@ -1018,23 +1024,30 @@ table.data td {
     }
 
     .auth {
-        background: var(--bg);
+                background: url(assets/auth-side.png);
+        background-size: auto 100vh;
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-attachment: fixed;
     }
 
-    .auth-side {
+    .auth-side { 
+
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
         width: 42%;
         min-height: 100vh;
         padding: 36px 44px 70px;
         color: #fff;
         position: relative;
-        background: linear-gradient(160deg, #6a5ee6, #3F35AB);
-        overflow: hidden;
+        /* background: url(assets/auth-side.png); */
+        /* overflow: hidden; */
     }
 
-    .auth-side::before {
+    /* .auth-side::before {
         content: "";
         position: absolute;
         top: -120px;
@@ -1059,7 +1072,7 @@ table.data td {
     .auth-side > * {
         position: relative;
         z-index: 1;
-    }
+    } */
 
     .auth-side .brand-name {
         color: #fff;
@@ -1092,7 +1105,13 @@ table.data td {
     .auth-box {
         flex: none;
         max-width: 560px;
+         border: 1px solid #9C94EB; 
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
         padding: 40px 32px;
+                margin-top: 24px;
+        margin-bottom: 24px;
+        background-color: var(--bg);
     }
 
     .auth-box .bottom {
@@ -1110,20 +1129,21 @@ table.data td {
     }
 
     .desktop-title {
+          text-align: left;
+                font-family: 'Stinger Fit', sans-serif;
         font-weight: 600;
-        font-size: 26px;
-        color: var(--primary-dark);
-        text-align: center;
+        font-size: 28px;
+        color: var(--text);
     }
 
     .desktop-sub {
-        text-align: center;
+        text-align: left;
         color: var(--text-2);
         margin: 8px 0 32px;
     }
 
     .btn {
-        border-radius: 10px;
+        border-radius: 50px;
     }
 
     .input,
@@ -1227,6 +1247,7 @@ table.data td {
     .page-head h1 {
         font-weight: 600;
         font-size: 28px;
+        font-family: 'Stinger Fit', sans-serif;
     }
 
     .page-head p {

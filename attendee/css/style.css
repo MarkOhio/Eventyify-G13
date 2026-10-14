@@ -44,7 +44,9 @@ p { line-height: 1.45; }
 .event-hero img { width: 100%; height: 100%; object-fit: cover; }
 .event-meta { font-size: 11px; line-height: 1.8; color: #555; }
 .description { color: #555; font-size: 12px; line-height: 1.55; margin-top: 18px; }
-.primary { border: 0; border-radius: 24px; background: var(--primary); color: white; height: 44px; width: 100%; margin-top: 18px; font-size: 12px; }
+
+
+.primary { border: 0; border-radius: 24px; background: var(--primary); color: white; height: 44px; width: 100%; margin-top: 50%; font-size: 12px; }
 .primary:hover { background: var(--primary-dark); }
 .secondary-button { margin-top: 10px; }
 form label { display: block; font-size: 12px; margin: 14px 0 0; }
@@ -52,7 +54,6 @@ form input, form select { display: block; width: 100%; height: 42px; border: 1px
 form input:focus, form select:focus { border-color: var(--primary); }
 .two-fields { display: flex; gap: 10px; }
 .two-fields label { width: 50%; }
-form .primary { margin-top: 24px; }
 .code-input { background: #f3f3f5 !important; border: 0 !important; }
 .message { min-height: 15px; color: var(--error); font-size: 11px; margin: 6px 0; }
 .resend { font-size: 11px; color: var(--muted); margin-top: 10px; }
@@ -75,12 +76,7 @@ form .primary { margin-top: 24px; }
 .info-card span { color: #555; }
 .info-card strong { font-size: 11px; font-weight: normal; }
 .valid-pill { background: #d8eee5; color: #43876d; border-radius: 12px; padding: 4px 9px; }
-.map-placeholder { height: calc(100vh - 110px); 
-    /* margin: -18px -20px 0;  */
-    background: #e9e8dc; position: relative; overflow: hidden; background-image: linear-gradient(25deg, transparent 48%, #fff 49%, #fff 51%, transparent 52%), linear-gradient(110deg, transparent 47%, #d4d0bd 48%, #d4d0bd 50%, transparent 51%), repeating-linear-gradient(0deg, transparent 0 48px, #d9d6c8 49px 51px); }
-.map-road { position: absolute; height: 12px; width: 130%; background: #fff; border: 1px solid #d9d2bd; transform: rotate(-28deg); left: -20%; top: 35%; }
-.road-two { top: 58%; transform: rotate(20deg); }
-.road-three { top: 15%; transform: rotate(70deg); }
-.map-pin { position: absolute; top: 50%; left: 50%; color: var(--primary); font-size: 27px; text-shadow: 0 0 0 5px white; }
-.map-label { position: absolute; top: 55%; left: 42%; background: white; border-radius: 4px; padding: 5px; font-size: 10px; }
+.map-placeholder { height: calc(100vh - 230px); min-height: 300px; position: relative; overflow: hidden; border-radius: 14px; background: #e9e8dc; }
+.map-placeholder iframe { width: 100%; height: 100%; border: 0; display: block; }
+.map-directions-link { display: block; width: 100%; margin-top: 16px; text-align: center; text-decoration: none; box-sizing: border-box; }
 @media (min-width: 700px) { .app { margin: 28px auto; min-height: calc(100vh - 56px); border-radius: 24px; box-shadow: 0 8px 50px #00000012; } .screen { min-height: 650px; } }

@@ -2,8 +2,8 @@ var showAll = false;
 var staffName = getStaffName();
 var today = new Date();
 
-document.getElementById("mGreeting").innerHTML = "Good Morning, " + staffName + " &#128075;";
-document.getElementById("dGreeting").innerHTML = "Good Morning, " + staffName + " &#128075;";
+document.getElementById("mGreeting").innerHTML = "Good Day, " + staffName + " &#128075;";
+document.getElementById("dGreeting").innerHTML = "Good Day, " + staffName + " &#128075;";
 document.getElementById("mAvatar").innerHTML = backend.staff.initials;
 document.getElementById("dToday").innerHTML = "Today, " + today.getDate() + " " + months[today.getMonth()] + " " + today.getFullYear();
 document.getElementById("dDate").innerHTML = calSvg + today.getDate() + " " + months[today.getMonth()] + ", " + today.getFullYear();

@@ -9,7 +9,10 @@ const mockApi = {
             time: '8:00 AM',
             day: '17',
             month: 'OCT',
-            location: 'Logos, Nigeria',
+            location: 'Lagos, Nigeria',
+            address: 'Landmark Centre, Plot 2 & 3 Water Corporation Road, Victoria Island, Lagos, Nigeria',
+            latitude: 6.4315,
+            longitude: 3.4144,
             image: 'assets/event-tech.jpg',
             description: 'The Tech & Creators Summit brings together developers, designers, entrepreneurs and creators to share ideas, learn new skills and explore opportunities in the digital world.'
         },
@@ -20,7 +23,10 @@ const mockApi = {
             time: '10:00 AM',
             day: '18',
             month: 'OCT',
-            location: 'Logos, Nigeria',
+            location: 'Lagos, Nigeria',
+            address: 'Landmark Centre, Plot 2 & 3 Water Corporation Road, Victoria Island, Lagos, Nigeria',
+            latitude: 6.4315,
+            longitude: 3.4144,
             image: 'assets/event-climate.jpg',
             description: 'A gathering for people working on climate action, sustainability and practical innovations for a better future.'
         }

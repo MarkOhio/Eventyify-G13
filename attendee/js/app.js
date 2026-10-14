@@ -35,7 +35,7 @@ async function loadEvents(search = '') {
     if (!filteredEvents.length) list.innerHTML = '<p class="muted">No events found.</p>';
 }
 
-async function openEvent(id) {
+async function openEvent(id, updateUrl = true) {
     selectedEvent = await mockApi.getEvent(id);
     if (!selectedEvent) return;
     document.getElementById('eventHeroImage').src = selectedEvent.image;
@@ -43,6 +43,9 @@ async function openEvent(id) {
     document.getElementById('eventTitle').textContent = selectedEvent.title;
     document.getElementById('eventMeta').textContent = `◷ ${selectedEvent.date} · ${selectedEvent.time   } 　⌖ ${selectedEvent.location}`;
     document.getElementById('eventDescription').textContent = selectedEvent.description;
+    if (updateUrl && new URLSearchParams(window.location.search).get('event') !== String(selectedEvent.id)) {
+        history.pushState({ eventId: selectedEvent.id }, '', `${window.location.pathname}?event=${selectedEvent.id}`);
+    }
     showScreen('eventScreen');
 }
 
@@ -114,10 +117,30 @@ document.getElementById('viewTicketButton').addEventListener('click', () => {
 document.getElementById('viewEventButton').addEventListener('click', async () => {
     await openEvent(attendee ? attendee.eventId : 1);
 });
-document.getElementById('directionsButton').addEventListener('click', () => showScreen('mapScreen'));
+document.getElementById('directionsButton').addEventListener('click', async () => {
+    const eventId = attendee && attendee.eventId ? attendee.eventId : (selectedEvent ? selectedEvent.id : 1);
+    const event = await mockApi.getEvent(eventId);
+    if (!event) return;
+    selectedEvent = event;
+    const latitude = event.latitude;
+    const longitude = event.longitude;
+    const gap = 0.012;
+    const left = longitude - gap;
+    const right = longitude + gap;
+    const bottom = latitude - gap;
+    const top = latitude + gap;
+    document.getElementById('mapAddress').textContent = event.address;
+    document.getElementById('eventMap').src = `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${latitude}%2C${longitude}`;
+    document.getElementById('openDirectionsLink').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.address)}`;
+    showScreen('mapScreen');
+});
 document.getElementById('myDetailsButton').addEventListener('click', () => showScreen('detailsScreen'));
 backButton.addEventListener('click', () => {
-    if (currentScreen === 'eventScreen') showScreen('eventsScreen');
+    if (currentScreen === 'eventScreen') {
+        history.pushState({}, '', window.location.pathname);
+        selectedEvent = null;
+        showScreen('eventsScreen');
+    }
     else if (currentScreen === 'personalScreen') showScreen('eventScreen');
     else if (currentScreen === 'verifyScreen') showScreen('personalScreen');
     else if (currentScreen === 'qrScreen' || currentScreen === 'detailsScreen' || currentScreen === 'mapScreen') showScreen('confirmedScreen');
@@ -138,8 +161,9 @@ document.getElementById('downloadButton').addEventListener('click', async () => 
 
 function fillTicket() {
     const eventTitle = attendee ? attendee.eventTitle : (selectedEvent ? selectedEvent.title : 'Tech & Creators Summit 2026');
+    const event = mockApi.events.find(item => item.id === Number(attendee ? attendee.eventId : (selectedEvent ? selectedEvent.id : 1)));
     document.getElementById('qrEventTitle').textContent = eventTitle;
-    document.getElementById('qrEventMeta').textContent = 'Sat, Oct 17th, 2026 · 8:00 AM · Logos, Nigeria';
+    document.getElementById('qrEventMeta').textContent = event ? `${event.date} · ${event.time} · ${event.location}` : '';
     document.getElementById('qrCode').innerHTML = makeQrPattern(attendee ? attendee.code : 'CSV-456');
 }
 
@@ -171,11 +195,27 @@ function fillDetails() {
 
 async function startApp() {
     await loadEvents();
-    setTimeout(() => {
+    setTimeout(async () => {
         splash.classList.add('hide');
         app.classList.remove('hidden');
         setTimeout(() => splash.remove(), 400);
-        showScreen('eventsScreen', false);
+        const eventId = new URLSearchParams(window.location.search).get('event');
+        if (eventId) {
+            await openEvent(eventId, false);
+        } else {
+            showScreen('eventsScreen', false);
+        }
     }, 1200);
 }
+
+window.addEventListener('popstate', async () => {
+    const eventId = new URLSearchParams(window.location.search).get('event');
+    if (eventId) {
+        await openEvent(eventId, false);
+    } else {
+        selectedEvent = null;
+        showScreen('eventsScreen', false);
+    }
+});
+
 startApp();
