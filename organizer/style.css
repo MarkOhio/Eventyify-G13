@@ -1469,7 +1469,11 @@ table.data td {
     }
 
     .auth {
-        background: var(--bg);
+                background: url(assets/auth-side.png);
+        background-size: auto 100vh;
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-attachment: fixed;
     }
 
     .auth-side {
@@ -1483,11 +1487,11 @@ table.data td {
         padding: 36px 44px 70px;
         color: #fff;
         position: relative;
-        background: linear-gradient(160deg, #6a5ee6, #3F35AB);
-        overflow: hidden;
+        /* background: linear-gradient(160deg, #6a5ee6, #3F35AB);
+        overflow: hidden; */
     }
 
-    .auth-side::before {
+    /* .auth-side::before {
         content: "";
         position: absolute;
         top: -120px;
@@ -1512,7 +1516,7 @@ table.data td {
     .auth-side > * {
         position: relative;
         z-index: 1;
-    }
+    } */
 
     .auth-side .brand-name {
         color: #fff;
@@ -1552,6 +1556,7 @@ table.data td {
         padding: 40px 32px;
                 margin-top: 24px;
         margin-bottom: 24px;
+        background-color: var(--bg);
     }
 
     .auth-box .bottom {
