@@ -1,6 +1,6 @@
-var editId = 0;
+var editId = "";
 if (window.location.search.indexOf("edit=") != -1) {
-    editId = Number(window.location.search.split("edit=")[1].split("&")[0]);
+    editId = decodeURIComponent(window.location.search.split("edit=")[1].split("&")[0]);
 }
 
 var tabButtons = document.querySelectorAll("#mTabs button");
@@ -27,8 +27,8 @@ for (var t = 0; t < tabButtons.length; t++) {
 }
 
 document.getElementById("next1").addEventListener("click", function () {
-    if (editId != 0) {
-        alert("This is supposed to save the changes. It will call the backend later.");
+    if (editId != "") {
+        alert("Editing events is not available on the backend yet.");
         return;
     }
     showTab("tabStaff");
@@ -41,6 +41,8 @@ document.getElementById("next2").addEventListener("click", function () {
 var addedStaff = [];
 
 function showStaffList() {
+    document.getElementById("mStaffList").innerHTML = '<p class="sub">Staff assignment is not connected to the backend yet.</p>';
+    return;
     var text = document.getElementById("mStaffSearch").value.toLowerCase();
     var html = "";
     for (var i = 0; i < backend.staffCandidates.length; i++) {
@@ -70,12 +72,6 @@ function addStaffToEvent(index) {
 document.getElementById("mStaffSearch").addEventListener("input", showStaffList);
 showStaffList();
 
-var staffSelect = document.getElementById("dStaff");
-for (var s = 0; s < backend.staff.length; s++) {
-    var option = document.createElement("option");
-    option.innerHTML = backend.staff[s].name;
-    staffSelect.appendChild(option);
-}
 
 var imageFile = document.getElementById("imageFile");
 var imageButtons = document.querySelectorAll(".imageBtn");
@@ -106,11 +102,102 @@ codesFile.addEventListener("change", function () {
     }
 });
 
+function fieldValue(desktopId, mobileId) {
+    var d = document.getElementById(desktopId);
+    var m = document.getElementById(mobileId);
+    if (d && d.value.trim() != "" && d.offsetParent !== null) { return d.value.trim(); }
+    if (m && m.value.trim() != "" && m.offsetParent !== null) { return m.value.trim(); }
+    if (d && d.value.trim() != "") { return d.value.trim(); }
+    if (m) { return m.value.trim(); }
+    return "";
+}
+
+function toIsoDate(text) {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) { return text; }
+    var d = new Date(text.replace(/(\d+)(st|nd|rd|th)/, "$1"));
+    if (isNaN(d.getTime())) { return ""; }
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+}
+
+function toTime24(text) {
+    var t = parseTimeStr(text);
+    if (!t) { return ""; }
+    return pad2(t[0]) + ":" + pad2(t[1]);
+}
+
+var creating = false;
+function createEvent() {
+    if (creating) { return; }
+    if (editId != "") {
+        alert("Editing events is not available on the backend yet.");
+        return;
+    }
+    var name = fieldValue("dEventTitle", "mName");
+    var dateRaw = fieldValue("dStart", "mDate");
+    var timeRaw = fieldValue("dStartTime", "mTime");
+    var location = fieldValue("dVenue", "mLocation");
+    var about = fieldValue("dDescription", "mAbout");
+    var category = document.getElementById("dType").value;
+    var endDate = document.getElementById("dEnd").value;
+    var endTime = document.getElementById("dEndTime").value;
+
+    var date = toIsoDate(dateRaw);
+    var time = toTime24(timeRaw);
+    if (name == "" || location == "") {
+        alert("Enter the event name and location.");
+        showTab("tabDetails");
+        return;
+    }
+    if (date == "") {
+        alert("Enter a valid date (for example 17 Oct 2026).");
+        showTab("tabDetails");
+        return;
+    }
+
+    var form = new FormData();
+    form.append("name", name);
+    form.append("title", name);
+    form.append("date", date);
+    form.append("startDate", date);
+    form.append("time", time);
+    form.append("startTime", time);
+    form.append("location", location);
+    form.append("venue", location);
+    form.append("description", about);
+    if (category != "") { form.append("category", category); }
+    if (endDate != "") { form.append("endDate", endDate); }
+    if (endTime != "") { form.append("endTime", endTime); }
+    if (imageFile.files.length > 0) { form.append("image", imageFile.files[0]); }
+
+    creating = true;
+    var buttons = document.querySelectorAll(".createBtn");
+    for (var b = 0; b < buttons.length; b++) { buttons[b].disabled = true; }
+
+    apiRequest("POST", "/events", { form: form }).then(function (res) {
+        if (!res.ok) {
+            creating = false;
+            for (var b2 = 0; b2 < buttons.length; b2++) { buttons[b2].disabled = false; }
+            alert(apiMessage(res, "Could not create the event."));
+            return;
+        }
+        var newId = idOf(res.data);
+        if (codesFile.files.length > 0 && newId != "") {
+            var codeForm = new FormData();
+            codeForm.append("ticket", codesFile.files[0]);
+            return apiRequest("POST", "/events/" + newId + "/codes", { form: codeForm }).then(function (r2) {
+                if (!r2.ok) {
+                    alert("Event created, but the ticket codes failed: " + apiMessage(r2, "upload error") + ". Upload them from Tickets & Codes.");
+                }
+                window.location.href = "events.html";
+            });
+        }
+        window.location.href = "events.html";
+    });
+}
+
 var createButtons = document.querySelectorAll(".createBtn");
 for (var k = 0; k < createButtons.length; k++) {
-    createButtons[k].addEventListener("click", function () {
-        alert("This is supposed to create the event. It will trigger something on the backend later.");
-    });
+    createButtons[k].addEventListener("click", createEvent);
 }
 
 var link = document.getElementById("eventLink");
@@ -144,19 +231,20 @@ for (var h = 0; h < shareButtons.length; h++) {
     });
 }
 
-if (editId != 0) {
-    var ev = getEventById(editId);
-    document.getElementById("mTitle").innerHTML = "Edit Details";
-    document.getElementById("dTitle").innerHTML = "Edit Details";
-    document.getElementById("mName").value = ev.name;
-    document.getElementById("mDate").value = ev.dateInput;
-    document.getElementById("mTime").value = ev.timeInput;
-    document.getElementById("mLocation").value = ev.location;
-    document.getElementById("mAbout").value = "Tell us about your event";
-    document.getElementById("next1").innerHTML = "Done";
-    document.getElementById("mCreate").innerHTML = "Done";
-    document.getElementById("dCreate").innerHTML = "Done";
-    document.getElementById("dEventTitle").value = ev.name;
-    document.getElementById("dVenue").value = ev.location;
-    document.getElementById("dDescription").value = ev.about;
+if (editId != "") {
+    loadEvents().then(function () {
+        var ev = getEventById(editId);
+        if (!ev) { return; }
+        document.getElementById("mTitle").innerHTML = "Edit Details";
+        document.getElementById("dTitle").innerHTML = "Edit Details";
+        document.getElementById("mName").value = ev.name;
+        document.getElementById("mLocation").value = ev.location;
+        document.getElementById("mAbout").value = ev.about;
+        document.getElementById("next1").innerHTML = "Done";
+        document.getElementById("mCreate").innerHTML = "Done";
+        document.getElementById("dCreate").innerHTML = "Done";
+        document.getElementById("dEventTitle").value = ev.name;
+        document.getElementById("dVenue").value = ev.location;
+        document.getElementById("dDescription").value = ev.about;
+    });
 }

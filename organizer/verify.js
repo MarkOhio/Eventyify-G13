@@ -56,15 +56,19 @@ function checkCode() {
         msg.innerHTML = "Enter the 6 digit code.";
         return;
     }
-    if (code == backend.otpCode) {
-        localStorage.setItem("emailVerified", "yes");
-        window.location.href = "login.html";
-    } else {
-        row.classList.add("error");
-        msg.className = "otp-msg error";
-        msg.innerHTML = "Incorrect code. Try again.";
-        clearBoxes();
-    }
+    msg.className = "otp-msg";
+    msg.innerHTML = "Verifying...";
+    apiVerifyEmail(localStorage.getItem("pendingEmail") || "", code).then(function (res) {
+        if (res.ok) {
+            localStorage.removeItem("pendingEmail");
+            window.location.href = "login.html";
+        } else {
+            row.classList.add("error");
+            msg.className = "otp-msg error";
+            msg.innerHTML = apiMessage(res, "Incorrect code. Try again.");
+            clearBoxes();
+        }
+    });
 }
 
 for (var b = 0; b < boxes.length; b++) {
@@ -110,10 +114,7 @@ document.getElementById("resendBtn").addEventListener("click", function () {
         alert("Please wait until the timer ends before asking for a new code.");
         return;
     }
-    alert("A new code has been sent. (Dummy backend, use " + backend.otpCode + ")");
-    clearBoxes();
-    row.classList.remove("error");
-    startTimer();
+    alert("Resending codes is not available on the backend yet.");
 });
 
 document.getElementById("verifyBack").addEventListener("click", function () {

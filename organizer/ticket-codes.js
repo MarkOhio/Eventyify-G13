@@ -1,9 +1,32 @@
-function showCodes() {
+var currentEvent = null;
+
+function showCodes(count) {
     var html = "";
-    for (var i = 0; i < backend.ticketCodes.length; i++) {
-        html += ticketCardHtml(backend.ticketCodes[i]);
+    if (currentEvent && count > 0) {
+        html = ticketCardHtml({ batch: "EVT-" + String(currentEvent.id).slice(-4).toUpperCase(), tickets: count, status: "Active" }, currentEvent);
+    } else if (currentEvent) {
+        html = '<p class="sub">No ticket codes uploaded for this event yet.</p>';
+    } else {
+        html = '<p class="sub">Create an event first.</p>';
     }
     document.getElementById("codesList").innerHTML = html;
+}
+
+function loadCodes() {
+    if (!currentEvent) {
+        showCodes(0);
+        return;
+    }
+    apiRequest("GET", "/events/" + currentEvent.id + "/codes").then(function (res) {
+        if (!res.ok) {
+            showApiNotice(apiMessage(res, "Could not load ticket codes."));
+            showCodes(0);
+            return;
+        }
+        var n = unwrapList(res.data).length;
+        if (n == 0 && res.data && (res.data.total || res.data.count)) { n = res.data.total || res.data.count; }
+        showCodes(n);
+    });
 }
 
 function showTickets() {
@@ -26,22 +49,34 @@ function showTickets() {
     document.getElementById("promoBody").innerHTML = promo;
 }
 
-showCodes();
 showTickets();
 
 var codesFile = document.getElementById("codesFile");
 document.getElementById("chooseFile").addEventListener("click", function () {
+    if (!currentEvent) {
+        alert("Create an event first.");
+        return;
+    }
     codesFile.click();
 });
 
 codesFile.addEventListener("change", function () {
-    if (codesFile.files.length > 0) {
-        var number = Math.floor(Math.random() * 900) + 100;
-        var amount = Math.floor(Math.random() * 200) + 50;
-        backend.ticketCodes.push({ batch: "TKTS" + number, tickets: amount, status: "Active", eventId: 1 });
-        document.getElementById("fileMsg").innerHTML = codesFile.files[0].name + " uploaded";
-        showCodes();
+    if (codesFile.files.length == 0 || !currentEvent) {
+        return;
     }
+    var msg = document.getElementById("fileMsg");
+    msg.innerHTML = "Uploading " + codesFile.files[0].name + "...";
+    var form = new FormData();
+    form.append("ticket", codesFile.files[0]);
+    apiRequest("POST", "/events/" + currentEvent.id + "/codes", { form: form }).then(function (res) {
+        codesFile.value = "";
+        if (res.ok) {
+            msg.innerHTML = "Codes uploaded";
+            loadCodes();
+        } else {
+            msg.innerHTML = apiMessage(res, "Upload failed.");
+        }
+    });
 });
 
 document.getElementById("viewCodes").addEventListener("click", function () {
@@ -67,3 +102,26 @@ for (var t = 0; t < ticketTabs.length; t++) {
         document.getElementById(this.getAttribute("data-t")).classList.remove("hidden");
     });
 }
+
+loadEvents().then(function (events) {
+    var picker = document.createElement("select");
+    picker.className = "input";
+    picker.id = "eventPicker";
+    picker.style.cssText = "margin-bottom:20px;max-width:420px";
+    for (var i = 0; i < events.length; i++) {
+        var o = document.createElement("option");
+        o.value = events[i].id;
+        o.innerHTML = events[i].name;
+        picker.appendChild(o);
+    }
+    var grid = document.querySelector(".upload-grid");
+    grid.parentNode.insertBefore(picker, grid);
+    var wanted = getIdFromUrl();
+    if (wanted != "") { picker.value = wanted; }
+    picker.addEventListener("change", function () {
+        currentEvent = getEventById(picker.value);
+        loadCodes();
+    });
+    currentEvent = events.length ? getEventById(picker.value) : null;
+    loadCodes();
+});

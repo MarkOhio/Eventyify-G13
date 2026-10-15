@@ -1,27 +1,3 @@
-var ev = getEventById(getIdFromUrl());
-
-document.getElementById("bannerImg").src = ev.image;
-document.getElementById("dName").innerHTML = ev.name;
-document.getElementById("dStatus").innerHTML = ev.status;
-document.getElementById("mName").innerHTML = ev.name;
-document.getElementById("dDate").innerHTML = ev.longDate;
-document.getElementById("dLocation").innerHTML = ev.city;
-document.getElementById("dAbout").innerHTML = ev.about.replace(ev.name, "<b>" + ev.name + "</b>");
-document.getElementById("sTotal").innerHTML = ev.totalTickets;
-document.getElementById("sChecked").innerHTML = ev.checkedIn;
-document.getElementById("sRemaining").innerHTML = ev.remaining;
-document.getElementById("sCategory").innerHTML = ev.category;
-document.getElementById("sCapacity").innerHTML = ev.capacity;
-document.getElementById("editLinkD").href = "create-event.html?edit=" + ev.id;
-document.getElementById("editLinkM").href = "create-event.html?edit=" + ev.id;
-
-var staffHtml = "";
-for (var s = 0; s < backend.staff.length; s++) {
-    var p = backend.staff[s];
-    staffHtml += '<div class="staff-card"><div class="staff-left"><div class="avatar">' + userSvg + '</div><div><p class="staff-name">' + p.name + '</p><p class="staff-sub">' + p.role + '</p></div></div><span class="active-pill">' + p.status + '</span></div>';
-}
-document.getElementById("dStaff").innerHTML = staffHtml;
-
 var tabs = document.querySelectorAll("#detailTabs button");
 for (var t = 0; t < tabs.length; t++) {
     tabs[t].addEventListener("click", function () {
@@ -42,4 +18,48 @@ bannerFile.addEventListener("change", function () {
     if (bannerFile.files.length > 0) {
         document.getElementById("bannerImg").src = URL.createObjectURL(bannerFile.files[0]);
     }
+});
+
+loadEvents().then(function () {
+    var ev = getEventById(getIdFromUrl());
+    if (!ev) {
+        document.getElementById("dName").innerHTML = "Event not found";
+        return;
+    }
+    document.getElementById("bannerImg").src = ev.image;
+    document.getElementById("dName").innerHTML = ev.name;
+    document.getElementById("dStatus").innerHTML = ev.status;
+    document.getElementById("mName").innerHTML = ev.name;
+    document.getElementById("dDate").innerHTML = ev.longDate;
+    document.getElementById("dLocation").innerHTML = ev.city;
+    document.getElementById("dAbout").innerHTML = ev.about.replace(ev.name, "<b>" + ev.name + "</b>");
+    document.getElementById("sCategory").innerHTML = ev.category;
+    document.getElementById("sCapacity").innerHTML = ev.capacity;
+    document.getElementById("editLinkD").href = "create-event.html?edit=" + ev.id;
+    document.getElementById("editLinkM").href = "create-event.html?edit=" + ev.id;
+    document.getElementById("dStaff").innerHTML = '<p class="sub">Staff assignment is not connected to the backend yet.</p>';
+
+    var total = 0;
+    var checked = 0;
+    document.getElementById("sTotal").innerHTML = "...";
+    document.getElementById("sChecked").innerHTML = "...";
+    document.getElementById("sRemaining").innerHTML = "...";
+    Promise.all([
+        apiRequest("GET", "/events/" + ev.id + "/codes"),
+        apiRequest("GET", "/scans/events/" + ev.id + "/attendance")
+    ]).then(function (r) {
+        if (r[0].ok) {
+            total = unwrapList(r[0].data).length;
+            if (r[0].data && (r[0].data.total || r[0].data.count)) { total = r[0].data.total || r[0].data.count; }
+        }
+        if (r[1].ok) {
+            var d = r[1].data || {};
+            var list = unwrapList(d);
+            checked = Number(d.checkedIn || d.checkedInCount || d.totalCheckedIn || list.length || 0);
+            if (total == 0) { total = Number(d.total || d.totalAttendees || 0); }
+        }
+        document.getElementById("sTotal").innerHTML = total;
+        document.getElementById("sChecked").innerHTML = checked;
+        document.getElementById("sRemaining").innerHTML = Math.max(total - checked, 0);
+    });
 });

@@ -1,6 +1,6 @@
 function showLive() {
     var live = backend.liveAttendance;
-    var percent = Math.round(live.checkedIn / live.total * 100);
+    var percent = live.total > 0 ? Math.round(live.checkedIn / live.total * 100) : 0;
     document.getElementById("mCount").innerHTML = live.checkedIn;
     document.getElementById("mPercent").innerHTML = percent + "% of total attendees";
     document.getElementById("mDonut").style.background = "conic-gradient(#5B4BDB 0 " + percent + "%, #E0E0E3 " + percent + "% 100%)";
@@ -92,11 +92,7 @@ document.getElementById("filterBtn").addEventListener("click", function () {
 });
 
 document.getElementById("refreshBtn").addEventListener("click", function () {
-    var more = Math.floor(Math.random() * 5) + 1;
-    if (backend.liveAttendance.checkedIn + more <= backend.liveAttendance.total) {
-        backend.liveAttendance.checkedIn = backend.liveAttendance.checkedIn + more;
-    }
-    showLive();
+    loadAttendance();
 });
 
 var exportButtons = document.querySelectorAll(".exportBtn");
@@ -105,14 +101,78 @@ for (var x = 0; x < exportButtons.length; x++) {
         var text = "Name,Ticket,Time,Status,Gate\n";
         for (var i = 0; i < backend.attendees.length; i++) {
             var a = backend.attendees[i];
-            text += a.name + "," + a.ticket + "," + a.time + "," + a.status + "," + a.gate + "\n";
+            text += csvCell(a.name) + "," + csvCell(a.ticket) + "," + csvCell(a.time) + "," + csvCell(a.status) + "," + csvCell(a.gate) + "\n";
         }
         downloadCsv("attendance-history.csv", text);
     });
 }
 
+function attendeeName(a) {
+    return a.name || a.attendeeName || a.fullName || ((a.firstName || "") + " " + (a.lastName || "")).trim() || (a.attendee && (a.attendee.name || ((a.attendee.firstName || "") + " " + (a.attendee.lastName || "")).trim())) || "Attendee";
+}
+
+function attendeeTime(a) {
+    var raw = a.checkedInAt || a.scannedAt || a.scanTime || a.timestamp || a.time || a.createdAt;
+    if (!raw) { return "-"; }
+    var d = new Date(raw);
+    if (isNaN(d.getTime())) { return String(raw); }
+    return clockText(d).replace(" ", "");
+}
+
+function loadAttendance() {
+    if (!attendanceEvent) {
+        showLive();
+        showHistory();
+        return;
+    }
+    apiRequest("GET", "/scans/events/" + attendanceEvent.id + "/attendance").then(function (res) {
+        if (!res.ok) {
+            showApiNotice(apiMessage(res, "Could not load attendance."));
+            return;
+        }
+        var d = res.data || {};
+        var list = unwrapList(d);
+        var rows = [];
+        for (var i = 0; i < list.length; i++) {
+            var a = list[i];
+            var ticket = a.ticketType || a.type || (a.ticket && a.ticket.type) || "-";
+            var status = a.status || "Active";
+            if (/invalid|declined|duplicate/i.test(status)) { status = "Invalid"; } else { status = "Active"; }
+            rows.push({ name: attendeeName(a), ticket: ticket, time: attendeeTime(a), status: status, gate: a.gate || "-" });
+        }
+        var checked = Number(d.checkedIn || d.checkedInCount || d.totalCheckedIn || rows.length);
+        var total = Number(d.total || d.totalAttendees || d.totalTickets || attendanceEvent.totalTickets || checked);
+        backend.liveAttendance = { total: total, checkedIn: checked };
+        backend.liveAttendees = rows;
+        backend.attendees = rows;
+        var t = new Date();
+        backend.report.date = DAYN[t.getDay()] + ", " + MON[t.getMonth()] + " " + ordinal(t.getDate()) + ", " + t.getFullYear();
+        showLive();
+        showHistory();
+    });
+}
+
+var attendanceEvent = null;
+backend.liveAttendance = { total: 0, checkedIn: 0 };
+backend.liveAttendees = [];
+backend.attendees = [];
 showLive();
 showHistory();
 if (window.location.hash == "#history") {
     showView("history");
 }
+
+loadEvents().then(function (events) {
+    var wanted = getIdFromUrl();
+    attendanceEvent = wanted != "" ? getEventById(wanted) : null;
+    if (!attendanceEvent) {
+        for (var i = 0; i < events.length; i++) {
+            if (events[i].status == "Active") { attendanceEvent = events[i]; break; }
+        }
+    }
+    if (!attendanceEvent && events.length) { attendanceEvent = events[events.length - 1]; }
+    if (attendanceEvent) {
+        document.getElementById("dSub").innerHTML = attendanceEvent.name + " - track who is at your event in real time.";
+    }
+    loadAttendance();
+});

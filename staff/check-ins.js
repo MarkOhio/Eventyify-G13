@@ -1,9 +1,5 @@
-var selected = getSelectedEvent();
+var selected = null;
 var filter = "All";
-
-if (selected) {
-    document.getElementById("histEvent").innerHTML = selected.name;
-}
 
 function pillClass(state) {
     if (state == "Confirmed") {
@@ -21,7 +17,7 @@ function render() {
     var rows = "";
     for (var i = 0; i < list.length; i++) {
         var c = list[i];
-        if (selected && c.eventId != selected.id) {
+        if (selected && String(c.eventId) != String(selected.id)) {
             continue;
         }
         if (filter != "All" && c.status != filter) {
@@ -56,4 +52,10 @@ document.getElementById("allChip").addEventListener("click", function () {
     setFilter("All");
 });
 
-render();
+loadEvents().then(function () {
+    selected = getSelectedEvent();
+    if (selected) {
+        document.getElementById("histEvent").innerHTML = selected.name;
+    }
+    render();
+});

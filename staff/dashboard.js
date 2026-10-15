@@ -4,7 +4,7 @@ var today = new Date();
 
 document.getElementById("mGreeting").innerHTML = "Good Day, " + staffName + " &#128075;";
 document.getElementById("dGreeting").innerHTML = "Good Day, " + staffName + " &#128075;";
-document.getElementById("mAvatar").innerHTML = backend.staff.initials;
+document.getElementById("mAvatar").innerHTML = apiUser().initials;
 document.getElementById("dToday").innerHTML = "Today, " + today.getDate() + " " + months[today.getMonth()] + " " + today.getFullYear();
 document.getElementById("dDate").innerHTML = calSvg + today.getDate() + " " + months[today.getMonth()] + ", " + today.getFullYear();
 
@@ -33,14 +33,14 @@ function render() {
         var badge = '<span class="badge pill pill-soft">Upcoming</span>';
 
         if (live) {
-            buttons = '<a class="btn" href="scan.html" onclick="chooseEvent(' + ev.id + ')">Scan</a>';
-            buttons += '<a class="btn btn-soft" href="check-ins.html" onclick="chooseEvent(' + ev.id + ')">Check ins</a>';
-            deskButtons = '<a class="btn" href="scan.html" onclick="chooseEvent(' + ev.id + ')">Scan QR</a>';
-            deskButtons += '<a class="btn btn-soft" href="check-ins.html" onclick="chooseEvent(' + ev.id + ')">Check-ins</a>';
+            buttons = '<a class="btn" href="scan.html" onclick="chooseEvent(\'' + ev.id + '\')">Scan</a>';
+            buttons += '<a class="btn btn-soft" href="check-ins.html" onclick="chooseEvent(\'' + ev.id + '\')">Check ins</a>';
+            deskButtons = '<a class="btn" href="scan.html" onclick="chooseEvent(\'' + ev.id + '\')">Scan QR</a>';
+            deskButtons += '<a class="btn btn-soft" href="check-ins.html" onclick="chooseEvent(\'' + ev.id + '\')">Check-ins</a>';
             badge = '<span class="badge pill pill-bad">Live</span>';
         } else {
-            buttons = '<button class="btn btn-red" type="button" onclick="exitEvent(' + ev.id + ')">Exit event</button>';
-            deskButtons = '<button class="btn btn-outline" type="button" style="color:#D92D20;border-color:#f3b8b3" onclick="exitEvent(' + ev.id + ')">Exit event</button>';
+            buttons = '<button class="btn btn-red" type="button" onclick="exitEvent(\'' + ev.id + '\')">Exit event</button>';
+            deskButtons = '<button class="btn btn-outline" type="button" style="color:#D92D20;border-color:#f3b8b3" onclick="exitEvent(\'' + ev.id + '\')">Exit event</button>';
         }
 
         mobile += heroCardHtml(ev, buttons);
@@ -54,7 +54,7 @@ function render() {
     }
 
     if (events.length == 0) {
-        mobile = '<div class="empty-box">No events yet. Accept an invitation from the bell icon.</div>';
+        mobile = '<div class="empty-box">No events available yet.</div>';
         desk = mobile;
     }
 
@@ -79,4 +79,4 @@ function toggleAll() {
 document.getElementById("mSeeAll").addEventListener("click", toggleAll);
 document.getElementById("dSeeAll").addEventListener("click", toggleAll);
 
-render();
+loadEvents().then(render);

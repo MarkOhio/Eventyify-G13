@@ -31,9 +31,16 @@ var navItems = [
 var pageName = document.body.getAttribute("data-page");
 
 if (document.body.getAttribute("data-protected") == "yes") {
-    if (localStorage.getItem("organizerLoggedIn") != "yes") {
+    if (!apiLoggedIn()) {
         window.location.href = "login.html";
     }
+}
+
+function loadEvents() {
+    return fetchEvents().then(function (list) {
+        backend.events = list;
+        return list;
+    });
 }
 
 function buildNav() {
@@ -54,7 +61,7 @@ function buildNav() {
             bottom += '<a class="' + cls + '" href="' + n.href + '"><svg viewBox="0 0 24 24">' + navIcons[n.key] + '</svg>' + n.mobile + '</a>';
         }
     }
-    side += '<div class="side-user"><div class="avatar">' + backend.organizer.initials + '</div><div><p>' + backend.organizer.fullName + '</p><small>' + backend.organizer.role + '</small></div></div></div>';
+    side += '<div class="side-user"><div class="avatar">' + apiUser().initials + '</div><div><p>' + apiUser().fullName + '</p><small>' + (apiUser().role || 'Organizer') + '</small></div></div></div>';
     bottom += '</nav>';
     navArea.innerHTML = side + bottom;
 }
@@ -64,9 +71,9 @@ buildNav();
 function getIdFromUrl() {
     var q = window.location.search;
     if (q.indexOf("id=") != -1) {
-        return Number(q.split("id=")[1].split("&")[0]);
+        return decodeURIComponent(q.split("id=")[1].split("&")[0]);
     }
-    return 1;
+    return "";
 }
 
 function getEventById(id) {
@@ -75,7 +82,7 @@ function getEventById(id) {
             return backend.events[i];
         }
     }
-    return backend.events[0];
+    return backend.events.length ? backend.events[0] : null;
 }
 
 function heroCardHtml(ev) {
@@ -132,8 +139,8 @@ function qrSvg(text) {
     return '<svg class="qr" viewBox="-1 -1 27 27" fill="#17152B" shape-rendering="crispEdges">' + rects + '</svg>';
 }
 
-function ticketCardHtml(t) {
-    var ev = getEventById(t.eventId);
+function ticketCardHtml(t, ev) {
+    if (!ev) { ev = { name: "Event", longDate: "", city: "" }; }
     var h = '<div class="ticket-card">' + qrSvg(t.batch);
     h += '<p class="warn-red">Don’t share with anyone</p>';
     h += '<h3>' + ev.name + '</h3>';

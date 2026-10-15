@@ -1,12 +1,4 @@
-var selected = getSelectedEvent();
-
-if (!selected) {
-    alert("You have no accepted events yet.");
-    window.location.href = "dashboard.html";
-} else if (!isLive(selected)) {
-    alert("This event is not live yet. Scanning opens when the event starts.");
-    window.location.href = "dashboard.html";
-}
+var selected = null;
 
 var video = document.getElementById("video");
 var canvas = document.getElementById("canvas");
@@ -16,7 +8,7 @@ var scanning = false;
 var lastScan = null;
 var states = ["stateScan", "stateSuccess", "stateDuplicate", "stateInvalid", "stateOffline", "stateCamera"];
 
-if (selected) {
+function fillEventInfo() {
     document.getElementById("mEventName").innerHTML = selected.name;
     document.getElementById("dEventName").innerHTML = selected.name;
     document.getElementById("dEventDate").innerHTML = formatDate(selected.startsAt);
@@ -114,43 +106,63 @@ function fillCard(prefix, who, type, code, time) {
 
 function handleCode(raw) {
     stopCamera();
-    var code = raw.trim().toUpperCase();
-    var match = code.match(/[A-Z]{3}-\d+/);
-    if (match) {
-        code = match[0];
-    }
+    var code = raw.trim();
 
     if (navigator.onLine == false) {
         showOffline();
         return;
     }
 
-    var ticket = backend.tickets[code];
-    if (ticket == undefined || ticket.eventId != selected.id) {
-        saveCheckIn({ eventId: selected.id, time: nowTime(), name: "Unknown ticket", code: code, type: "-", status: "Declined", gate: selected.gate });
-        showState("stateInvalid");
-        return;
-    }
+    scanOnServer(code);
+}
 
-    var firstTime = "";
-    var all = getCheckIns();
-    for (var i = 0; i < all.length; i++) {
-        if (all[i].eventId == selected.id && all[i].code == code && all[i].status == "Confirmed") {
-            firstTime = all[i].time;
+function personFrom(d) {
+    var p = d.attendee || d.ticket || d.data || d;
+    if (p.attendee) { p = p.attendee; }
+    var name = p.name || p.attendeeName || p.fullName || ((p.firstName || "") + " " + (p.lastName || "")).trim() || "Attendee";
+    var type = p.ticketType || p.type || (p.ticket && p.ticket.type) || "-";
+    return { name: name, type: type, when: p.checkedInAt || p.scannedAt || p.firstScannedAt || "" };
+}
+
+function scanOnServer(code) {
+    showToast("Checking ticket...");
+    apiRequest("POST", "/scans/scan", { body: {
+        code: code, ticketCode: code, qrCode: code, qrData: code,
+        eventId: selected.id, event: selected.id, gate: selected.gate
+    } }).then(function (res) {
+        if (res.networkError) {
+            showOffline();
+            return;
         }
-    }
-
-    if (firstTime != "") {
-        saveCheckIn({ eventId: selected.id, time: nowTime(), name: ticket.name, code: code, type: ticket.type, status: "Duplicate", gate: selected.gate });
-        fillCard("d", ticket.name, ticket.type, code, firstTime);
-        showState("stateDuplicate");
-    } else {
+        var d = res.data || {};
+        var text = JSON.stringify(d).toLowerCase();
+        var person = personFrom(d);
         var time = nowTime();
-        saveCheckIn({ eventId: selected.id, time: time, name: ticket.name, code: code, type: ticket.type, status: "Confirmed", gate: selected.gate });
-        lastScan = { name: ticket.name, type: ticket.type, code: code, time: time };
-        fillCard("s", ticket.name, ticket.type, code, time);
-        showState("stateSuccess");
-    }
+        var who = person.name;
+
+        if (/already|duplicate|previously|been used|used/.test(text) && !/unused/.test(text)) {
+            var first = time;
+            if (person.when) {
+                var fd = new Date(person.when);
+                if (!isNaN(fd.getTime())) { first = formatHour(fd); }
+            }
+            saveCheckIn({ eventId: selected.id, time: time, name: who, code: code, type: person.type, status: "Duplicate", gate: selected.gate });
+            fillCard("d", who, person.type, code, first);
+            showState("stateDuplicate");
+            return;
+        }
+
+        if (res.ok && d.success !== false && d.valid !== false && !/invalid|not found|wrong event|not valid|expired/.test(text)) {
+            saveCheckIn({ eventId: selected.id, time: time, name: who, code: code, type: person.type, status: "Confirmed", gate: selected.gate });
+            lastScan = { name: who, type: person.type, code: code, time: time };
+            fillCard("s", who, person.type, code, time);
+            showState("stateSuccess");
+            return;
+        }
+
+        saveCheckIn({ eventId: selected.id, time: time, name: "Unknown ticket", code: code, type: "-", status: "Declined", gate: selected.gate });
+        showState("stateInvalid");
+    });
 }
 
 function showOffline() {
@@ -208,10 +220,22 @@ window.addEventListener("online", function () {
     showState("stateScan");
 });
 
-if (selected && isLive(selected)) {
+loadEvents().then(function () {
+    selected = getSelectedEvent();
+    if (!selected) {
+        alert("No events available to scan for.");
+        window.location.href = "dashboard.html";
+        return;
+    }
+    if (!isLive(selected)) {
+        alert("This event is not live yet. Scanning opens when the event starts.");
+        window.location.href = "dashboard.html";
+        return;
+    }
+    fillEventInfo();
     if (navigator.onLine) {
         showState("stateScan");
     } else {
         showOffline();
     }
-}
+});

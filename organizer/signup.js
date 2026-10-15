@@ -44,10 +44,14 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
         err.innerHTML = "Passwords do not match.";
         return;
     }
-    err.innerHTML = "";
-    localStorage.setItem("newFirstName", first);
-    localStorage.setItem("newLastName", last);
-    localStorage.setItem("newEmail", email);
-    localStorage.setItem("newPass", pass);
-    window.location.href = "verify-passcode.html";
+    err.innerHTML = "Creating account...";
+    apiRegister(first, last, email, pass, "organizer").then(function (res) {
+        if (!res.ok) {
+            err.innerHTML = apiMessage(res, "Could not create the account.");
+            return;
+        }
+        err.innerHTML = "";
+        localStorage.setItem("pendingEmail", email);
+        window.location.href = "verify-passcode.html";
+    });
 });

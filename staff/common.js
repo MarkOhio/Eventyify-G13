@@ -25,18 +25,23 @@ var navItems = [
 
 var pageName = document.body.getAttribute("data-page");
 
+var backend = { events: [] };
+
 if (document.body.getAttribute("data-protected") == "yes") {
-    if (localStorage.getItem("staffLoggedIn") != "yes") {
+    if (!apiLoggedIn()) {
         window.location.href = "login.html";
     }
 }
 
 function getStaffName() {
-    var saved = localStorage.getItem("staffName");
-    if (saved == null) {
-        return backend.staff.firstName;
-    }
-    return saved;
+    return apiUser().firstName;
+}
+
+function loadEvents() {
+    return fetchEvents().then(function (list) {
+        backend.events = list;
+        return list;
+    });
 }
 
 function buildNav() {
@@ -53,7 +58,7 @@ function buildNav() {
         }
         html += '<a class="' + cls + '" href="' + n.href + '"><svg viewBox="0 0 24 24">' + navIcons[n.key] + '</svg>' + n.text + '</a>';
     }
-    html += '<div class="side-user"><div class="avatar-btn">' + backend.staff.initials + '</div><div><p>' + backend.staff.fullName + '</p><small>' + backend.staff.role + '</small></div></div></div>';
+    html += '<div class="side-user"><div class="avatar-btn">' + apiUser().initials + '</div><div><p>' + apiUser().fullName + '</p><small>' + (apiUser().role || 'Staff') + '</small></div></div></div>';
     navArea.innerHTML = html;
 }
 
@@ -76,7 +81,6 @@ function addToList(key, id) {
 }
 
 function getAcceptedEvents() {
-    var accepted = readList("staffAccepted");
     var removed = readList("staffRemoved");
     var result = [];
     for (var i = 0; i < backend.events.length; i++) {
@@ -84,27 +88,22 @@ function getAcceptedEvents() {
         if (removed.indexOf(ev.id) != -1) {
             continue;
         }
-        if (ev.status == "accepted" || accepted.indexOf(ev.id) != -1) {
-            result.push(ev);
+        if (ev.status == "Past" && !DEMO_SCAN_ANY_TIME) {
+            continue;
         }
+        result.push(ev);
     }
     return result;
 }
 
 function getInvitations() {
-    var accepted = readList("staffAccepted");
-    var removed = readList("staffRemoved");
-    var result = [];
-    for (var i = 0; i < backend.events.length; i++) {
-        var ev = backend.events[i];
-        if (ev.status == "invited" && accepted.indexOf(ev.id) == -1 && removed.indexOf(ev.id) == -1) {
-            result.push(ev);
-        }
-    }
-    return result;
+    return [];
 }
 
 function isLive(ev) {
+    if (DEMO_SCAN_ANY_TIME) {
+        return true;
+    }
     var time = new Date().getTime();
     return time >= ev.startsAt && time <= ev.endsAt;
 }
@@ -115,9 +114,9 @@ function chooseEvent(id) {
 
 function getSelectedEvent() {
     var list = getAcceptedEvents();
-    var id = Number(localStorage.getItem("staffEvent"));
+    var id = localStorage.getItem("staffEvent");
     for (var i = 0; i < list.length; i++) {
-        if (list[i].id == id) {
+        if (String(list[i].id) == id) {
             return list[i];
         }
     }
@@ -184,9 +183,6 @@ function getCheckIns() {
     var all = [];
     for (var i = mine.length - 1; i >= 0; i--) {
         all.push(mine[i]);
-    }
-    for (var j = 0; j < backend.checkIns.length; j++) {
-        all.push(backend.checkIns[j]);
     }
     return all;
 }

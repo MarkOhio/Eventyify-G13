@@ -6,6 +6,5 @@ for (var i = 0; i < cards.length; i++) {
 }
 
 document.getElementById("logoutBtn").addEventListener("click", function () {
-    localStorage.removeItem("staffLoggedIn");
-    window.location.href = "login.html";
+    apiLogout();
 });
