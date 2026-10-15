@@ -23,7 +23,7 @@ function showScreen(screenId, addToHistory = true) {
 async function loadEvents(search = '') {
     const list = document.getElementById('eventsList');
     list.innerHTML = '';
-    const events = await mockApi.getEvents();
+    const events = await api.getEvents();
     const filteredEvents = events.filter(event => event.title.toLowerCase().includes(search.toLowerCase()));
     filteredEvents.forEach(event => {
         const card = document.createElement('article');
@@ -32,11 +32,11 @@ async function loadEvents(search = '') {
         card.addEventListener('click', () => openEvent(event.id));
         list.appendChild(card);
     });
-    if (!filteredEvents.length) list.innerHTML = '<p class="muted">No events found.</p>';
+    if (!filteredEvents.length) list.innerHTML = '<p class="muted">' + (api.lastError || 'No events found.') + '</p>';
 }
 
 async function openEvent(id, updateUrl = true) {
-    selectedEvent = await mockApi.getEvent(id);
+    selectedEvent = await api.getEvent(id);
     if (!selectedEvent) return;
     document.getElementById('eventHeroImage').src = selectedEvent.image;
     document.getElementById('eventBadge').innerHTML = `${selectedEvent.day}<br><small>${selectedEvent.month}</small>`;
@@ -62,15 +62,20 @@ document.getElementById('getTicketButton').addEventListener('click', () => {
 
 document.getElementById('personalForm').addEventListener('submit', async event => {
     event.preventDefault();
-    attendee = await mockApi.saveAttendee({
+    const saved = await api.saveAttendee({
         firstName: document.getElementById('firstName').value.trim(),
         lastName: document.getElementById('lastName').value.trim(),
         email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
         ticketType: document.getElementById('ticketType').value,
-        eventId: selectedEvent ? selectedEvent.id : 1,
-        eventTitle: selectedEvent ? selectedEvent.title : 'Tech & Creators Summit 2026'
+        eventId: selectedEvent ? selectedEvent.id : '',
+        eventTitle: selectedEvent ? selectedEvent.title : ''
     });
+    if (!saved.ok) {
+        alert(saved.message);
+        return;
+    }
+    attendee = saved.attendee;
     document.getElementById('ticketCode').value = '';
     document.getElementById('verifyMessage').textContent = '';
     startCountdown();
@@ -79,7 +84,7 @@ document.getElementById('personalForm').addEventListener('submit', async event =
 
 document.getElementById('verifyForm').addEventListener('submit', async event => {
     event.preventDefault();
-    const result = await mockApi.verifyTicket(document.getElementById('ticketCode').value);
+    const result = await api.verifyTicket(document.getElementById('ticketCode').value);
     const message = document.getElementById('verifyMessage');
     if (result.valid) {
         attendee = result.attendee;
@@ -90,9 +95,7 @@ document.getElementById('verifyForm').addEventListener('submit', async event => 
 });
 
 document.getElementById('resendButton').addEventListener('click', async () => {
-    await mockApi.resendCode();
-    document.getElementById('verifyMessage').textContent = 'A new code has been sent.';
-    startCountdown();
+    document.getElementById('verifyMessage').textContent = 'Resending codes is not available yet. Use the ticket code you were given.';
 });
 
 function startCountdown() {
@@ -115,22 +118,15 @@ document.getElementById('viewTicketButton').addEventListener('click', () => {
     showScreen('qrScreen');
 });
 document.getElementById('viewEventButton').addEventListener('click', async () => {
-    await openEvent(attendee ? attendee.eventId : 1);
+    await openEvent(attendee ? attendee.eventId : '');
 });
 document.getElementById('directionsButton').addEventListener('click', async () => {
-    const eventId = attendee && attendee.eventId ? attendee.eventId : (selectedEvent ? selectedEvent.id : 1);
-    const event = await mockApi.getEvent(eventId);
+    const eventId = attendee && attendee.eventId ? attendee.eventId : (selectedEvent ? selectedEvent.id : '');
+    const event = await api.getEvent(eventId);
     if (!event) return;
     selectedEvent = event;
-    const latitude = event.latitude;
-    const longitude = event.longitude;
-    const gap = 0.012;
-    const left = longitude - gap;
-    const right = longitude + gap;
-    const bottom = latitude - gap;
-    const top = latitude + gap;
     document.getElementById('mapAddress').textContent = event.address;
-    document.getElementById('eventMap').src = `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${latitude}%2C${longitude}`;
+    document.getElementById('eventMap').src = `https://maps.google.com/maps?q=${encodeURIComponent(event.address)}&output=embed`;
     document.getElementById('openDirectionsLink').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.address)}`;
     showScreen('mapScreen');
 });
@@ -149,40 +145,36 @@ backButton.addEventListener('click', () => {
 
 document.getElementById('downloadButton').addEventListener('click', async () => {
     const svg = document.querySelector('#qrCode svg');
-    if (!svg) return;
-    const blob = new Blob([svg.outerHTML], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const img = document.querySelector('#qrCode img');
     const link = document.createElement('a');
-    link.href = url;
-    link.download = 'attendee-ticket.svg';
+    if (svg) {
+        const blob = new Blob([svg.outerHTML], { type: 'image/svg+xml;charset=utf-8' });
+        link.href = URL.createObjectURL(blob);
+        link.download = 'attendee-ticket.svg';
+    } else if (img) {
+        link.href = img.src;
+        link.download = 'attendee-ticket.png';
+    } else return;
     link.click();
-    URL.revokeObjectURL(url);
 });
 
 function fillTicket() {
-    const eventTitle = attendee ? attendee.eventTitle : (selectedEvent ? selectedEvent.title : 'Tech & Creators Summit 2026');
-    const event = mockApi.events.find(item => item.id === Number(attendee ? attendee.eventId : (selectedEvent ? selectedEvent.id : 1)));
+    const eventTitle = attendee ? attendee.eventTitle : (selectedEvent ? selectedEvent.title : '');
+    const event = api.events.find(item => String(item.id) === String(attendee ? attendee.eventId : (selectedEvent ? selectedEvent.id : '')));
     document.getElementById('qrEventTitle').textContent = eventTitle;
     document.getElementById('qrEventMeta').textContent = event ? `${event.date} · ${event.time} · ${event.location}` : '';
-    document.getElementById('qrCode').innerHTML = makeQrPattern(attendee ? attendee.code : 'CSV-456');
-}
-
-function makeQrPattern(value) {
-    let seed = 0;
-    for (let i = 0; i < value.length; i++) seed += value.charCodeAt(i) * (i + 3);
-    let rects = '';
-    for (let y = 0; y < 25; y++) {
-        for (let x = 0; x < 25; x++) {
-            seed = (seed * 9301 + 49297) % 233280;
-            const finder = (x < 7 && y < 7) || (x > 17 && y < 7) || (x < 7 && y > 17);
-            if (finder) {
-                const xx = x > 17 ? x - 18 : x;
-                const yy = y > 17 ? y - 18 : y;
-                if (xx === 0 || xx === 6 || yy === 0 || yy === 6 || (xx >= 2 && xx <= 4 && yy >= 2 && yy <= 4)) rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-            } else if (seed % 3 !== 0) rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-        }
+    const value = attendee ? (attendee.qrValue || attendee.code) : '';
+    const box = document.getElementById('qrCode');
+    if (!value) {
+        box.innerHTML = '';
+    } else if (String(value).startsWith('data:image') || /^https?:/.test(String(value))) {
+        box.innerHTML = `<img src="${value}" alt="Ticket QR" style="width:100%;height:100%">`;
+    } else {
+        const qr = qrcode(0, 'M');
+        qr.addData(String(value));
+        qr.make();
+        box.innerHTML = qr.createSvgTag({ scalable: true, margin: 2 });
     }
-    return `<svg viewBox="-1 -1 27 27" xmlns="http://www.w3.org/2000/svg"><rect x="-1" y="-1" width="27" height="27" fill="white"/><g fill="#111">${rects}</g></svg>`;
 }
 
 function fillDetails() {
