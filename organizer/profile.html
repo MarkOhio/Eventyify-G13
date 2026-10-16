@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Eventify Organizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="profile" data-protected="yes">
+    <div id="navArea"></div>
+    <main class="main">
+        <div class="page-title-row only-mobile"><a class="back" href="dashboard.html" aria-label="Back" data-back></a><h1 class="title">My Profile</h1></div>
+        <div class="page-head only-desktop"><div><h1>My Profile</h1><p>View your account information.</p></div></div>
+        <section class="profile-card">
+            <div class="profile-avatar" id="profileInitials">O</div>
+            <h2 id="profileName">Organizer</h2>
+            <p id="profileEmail" class="sub"></p>
+            <div class="profile-fields">
+                <div class="field"><label class="label" for="phoneNumber">Phone number</label><input class="input" type="tel" id="phoneNumber" placeholder="Add your phone number" autocomplete="tel"></div>
+                <p class="profile-note">Your phone number is saved in this browser only.</p>
+                <p id="profileMessage" class="file-msg" aria-live="polite"></p>
+                <button class="btn" type="button" id="savePhone">Save phone number</button>
+                <a class="btn btn-outline" href="verify-reset-code.html" style="margin-top:12px">Change Password</a>
+                <button class="btn btn-outline" type="button" id="profileLogout" style="margin-top:12px">Log out</button>
+            </div>
+        </section>
+    </main>
+    <script src="backend.js"></script>
+    <script src="common.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>
