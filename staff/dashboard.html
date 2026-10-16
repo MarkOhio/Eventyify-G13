@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Events - Eventify Staff</title>
+   <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="dashboard" data-protected="yes">
+    <div id="navArea"></div>
+    <div class="main">
+        <div class="only-mobile">
+            <div class="top-bar">
+                <div class="brand"><div class="logo-mark"><svg viewBox="0 0 44 44" role="img" aria-label="Eventify"><rect width="44" height="44" rx="10" fill="#5B4BDB"/><path d="M12 18v-5h5M27 13h5v5M32 26v5h-5M17 31h-5v-5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="22" r="4" fill="#fff"/></svg></div><span class="brand-name">Eventify</span></div>
+                <div class="top-icons">
+                    <a class="bell-link" href="notifications.html" id="mBell" aria-label="Notifications"></a>
+                    <a class="avatar-btn" href="settings.html" id="mAvatar"></a>
+                </div>
+            </div>
+            <h1 class="greeting" id="mGreeting"></h1>
+            <div class="section-row"><h2>Upcoming Events</h2><button id="mSeeAll" type="button">See all</button></div>
+            <div id="mEvents"></div>
+        </div>
+
+        <div class="only-desktop">
+            <div class="page-head">
+                <div><h1 id="dGreeting"></h1><p>Here are your assigned events for today</p></div>
+                <div class="head-actions"><div class="date-chip" id="dDate"></div><a class="bell-link" href="notifications.html" id="dBell" aria-label="Notifications"></a></div>
+            </div>
+            <div class="row-title"><h2 id="dToday"></h2><button id="dSeeAll" type="button">See all</button></div>
+            <div id="dEvents"></div>
+        </div>
+    </div>
+
+    <script src="backend.js"></script>
+    <script src="common.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
